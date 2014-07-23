@@ -5,6 +5,10 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+// Mongo Connection
+var monk = require('monk');
+var db = monk('localhost:27017/waryofdairy');
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var search = require('./routes/search');
@@ -29,6 +33,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(function (req, res, next) {
   res.locals.title = 'Wary of Dairy';
   res.locals.selected = req.path.toLowerCase();
+  next();
+});
+
+// Make our db accessible to our router
+app.use(function(req,res,next){
+  req.db = db;
   next();
 });
 

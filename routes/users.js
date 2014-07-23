@@ -3,7 +3,49 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get('/', function (req, res) {
-    res.send('respond with a resource');
+  var db = req.db;
+  var collection = db.get('users');
+  collection.find({}, {}, function (e, docs) {
+    res.render('users/list', {
+      "userlist": docs
+    });
+  });
+});
+
+/* GET Create User page. */
+router.get('/create', function (req, res) {
+  res.render('users/create', { title: 'Add New User' });
+});
+
+/* POST to Create User */
+router.post('/create', function (req, res) {
+
+  // Set our internal DB variable
+  var db = req.db;
+
+  // Get our form values. These rely on the "name" attributes
+  var userName = req.body.username;
+  var userEmail = req.body.useremail;
+
+  // Set our collection
+  var collection = db.get('users');
+
+  // Submit to the DB
+  collection.insert({
+    "username": userName,
+    "email": userEmail
+  }, function (err, doc) {
+    if (err) {
+      // If it failed, return error
+      res.send("There was a problem adding the information to the database.");
+    }
+    else {
+      // If it worked, set the header so the address bar doesn't still say /create
+      res.location("/users/");
+      // And forward to success page
+      res.redirect("/users/");
+    }
+  });
 });
 
 module.exports = router;

@@ -13,6 +13,8 @@
     "jade": "~1.3.0",
     "less": "^1.7.3",
     "less-middleware": "1.0.x",
+    "mongodb": "^1.4.7",
+    "monk": "^0.9.0",
     "morgan": "~1.0.0",
     "static-favicon": "~1.0.0"
   }

@@ -1,0 +1,18 @@
+//
+   Created by chris on 23/07/2014.
+
+extends ../layout
+
+block content
+  h1= title
+
+  form(role='form', name="adduser", method="post", action="/users/create")
+    .form-group
+      label(for='#inputUserName') Username
+      input#inputUserName.form-control(type="text", placeholder="Username", name="username")
+
+    .form-group
+      label(for='#inputUserEmail') Email address
+      input#inputUserEmail.form-control(type="text", placeholder="Email address", name="useremail")
+
+    button(type="submit").btn.btn-default Submit
