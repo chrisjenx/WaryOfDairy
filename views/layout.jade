@@ -21,9 +21,17 @@ html
 
       block header
       include header
-      block content
 
-    include footer
+      .container-fluid
+        .row
+          .col-xs-12.col-md-9
+            .panel.panel-default
+              .panel-body
+                block content
+          div.col-xs-12.col-md-3
+            include sidebar
 
-    script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
+      include footer
+
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
     script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js')

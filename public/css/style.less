@@ -1,2 +1,23 @@
 @import (reference) "bootstrap.css";
 @import (reference) "bootstrap-theme.css";
+
+// Variables
+@primary: #03a9f4;
+@background: #e1f5fe;
+@text-inverse-primary: #fff;
+@text-inverse-secondary: #fafafa;
+
+
+body{
+  background-color: @background;
+}
+
+.jumbotron {
+  background-color: @primary;
+  h1 {
+    color: @text-inverse-primary;
+  }
+  p {
+    color: @text-inverse-secondary;
+  }
+}
