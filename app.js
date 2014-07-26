@@ -4,10 +4,13 @@ var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
 
 // Mongo Connection
 var monk = require('monk');
 var db = monk('localhost:27017/waryofdairy');
+
+
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -28,19 +31,34 @@ app.use(cookieParser());
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Session secret
+app.use(session({
+  resave: false, // don't save session if unmodified
+  saveUninitialized: false, // don't create session until something stored
+  secret: 'super secret' //TODO generate and store in db.
+}));
 
 // Set view globals
 app.use(function (req, res, next) {
   res.locals.title = 'Wary of Dairy';
   res.locals.selected = req.path.toLowerCase();
+  res.locals.path = req.path;
+  // Make our db accessible to our router
+  req.db = db;
+  // Session-persisted message middleware
+  var err = req.session.error;
+  var msg = req.session.success;
+  delete req.session.error;
+  delete req.session.success;
+  res.locals.message = '';
+  if (err) res.locals.message = err;
+  if (msg) res.locals.message = msg;
+  // Add users into locals if exists
+  var user = req.session.user;
+  if(user) res.locals.user = user;
   next();
 });
 
-// Make our db accessible to our router
-app.use(function(req,res,next){
-  req.db = db;
-  next();
-});
 
 app.use('/', routes);
 app.use('/users', users);
