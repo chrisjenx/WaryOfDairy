@@ -10,6 +10,9 @@
           span.icon-bar
           span.icon-bar
         a.navbar-brand(href='/') Wary
+      .navbar-right
+        form(role='form', name="login", method="get", action="/users/login")
+          button.btn.btn-link.navbar-btn(type="submit") Admin
 
 
       div#nav-bar-collapse.collapse.navbar-collapse

@@ -35,7 +35,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   resave: false, // don't save session if unmodified
   saveUninitialized: false, // don't create session until something stored
-  secret: 'super secret' //TODO generate and store in db.
+  secret: 'super secret etc' //TODO generate and store in db.
 }));
 
 // Set view globals
