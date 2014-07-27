@@ -1,11 +1,12 @@
 var express = require('express');
+var checkAuth = require('../auth').checkAuth;
 var router = express.Router();
 
 /**
  * @param db {required} the monk db object
  * @param func {required} for callbacks of results callback(err, docs){err, array of posts}
  */
-function getAllPosts(db, func) {
+function loadPosts(db, func) {
   db.get('posts').find({}, {}, function (err, docs) {
     if (err) func(err, null);
     return func(null, docs);
@@ -14,19 +15,22 @@ function getAllPosts(db, func) {
 
 /* GET users listing. */
 router.get('/', function (req, res) {
-  getAllPosts(req.db, function (err, posts) {
+  loadPosts(req.db, function (err, posts) {
     res.render('blog/index', {
       posts: posts
     });
   });
 });
 
-
-// TODO auth
-
 /* GET create blog */
-router.get('/create', function (req, res) {
+router.route('/create')
+  .all(checkAuth)
+  .get(function (req, res) {
 
-});
+  })
+  .post(function (req, res) {
+
+  });
 
 module.exports = router;
+module.exports.loadPosts = loadPosts;

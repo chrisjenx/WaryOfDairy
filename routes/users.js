@@ -1,6 +1,7 @@
 var express = require('express');
-var router = express.Router();
+var checkAuth = require('../auth').checkAuth;
 var hash = require('../pass').hash;
+var router = express.Router();
 
 // Authenticate using mongo database of doom!
 function authenticate(db, name, pass, fn) {
@@ -48,36 +49,33 @@ function createUser(db, userName, userEmail, userPass, func) {
   });
 }
 
-/**
- * GET Login page
- */
-router.get('/login', function (req, res) {
-  res.render('users/login');
-});
-
-/**
- * POST Login and Auth User
- */
-router.post('/login', function (req, res) {
-  authenticate(req.db, req.body.username, req.body.userpassword, function (err, user) {
-    if (user) {
-      // Regenerate session when signing in
-      // to prevent fixation
-      req.session.regenerate(function () {
-        // Store the user's primary key
-        // in the session store to be retrieved,
-        // or in this case the entire user object
-        req.session.user = user;
-        req.session.success = 'Authenticated as ' + user.username + '.';
-        res.redirect('back');
-      });
-    } else {
-      console.error('Failed to login %s', req.body.username);
-      req.session.error = 'Authentication failed.';
-      res.redirect('login');
-    }
+/* Login Routes */
+router.route('/login')
+  /* GET Login page */
+  .get(function (req, res) {
+    res.render('users/login');
+  })
+  /* POST Login and Auth User */
+  .post(function (req, res) {
+    authenticate(req.db, req.body.username, req.body.userpassword, function (err, user) {
+      if (user) {
+        // Regenerate session when signing in
+        // to prevent fixation
+        req.session.regenerate(function () {
+          // Store the user's primary key
+          // in the session store to be retrieved,
+          // or in this case the entire user object
+          req.session.user = user;
+          req.session.success = 'Authenticated as ' + user.username + '.';
+          res.redirect('back');
+        });
+      } else {
+        console.error('Failed to login %s', req.body.username);
+        req.session.error = 'Authentication failed.';
+        res.redirect('login');
+      }
+    });
   });
-});
 
 
 // ========
@@ -85,15 +83,7 @@ router.post('/login', function (req, res) {
 // ========
 
 // All user pages after login require Auth.
-router.use(function (req, res, next) {
-//  if (!req.session.user_id) {
-  if (!req.session.user) {
-    req.session.error = 'You are not authorized to view this page';
-    res.redirect('/users/login');
-  } else {
-    next();
-  }
-});
+router.use(checkAuth);
 
 /* GET users listing. */
 router.get('/', function (req, res) {
@@ -114,28 +104,29 @@ router.get('/logout', function (req, res) {
   });
 });
 
-/* GET Create User page. */
-router.get('/create', function (req, res) {
-  res.render('users/create', { title: 'Add New User' });
-});
+/* Create Routes */
+router.route('/create')
+  /* GET Create User page. */
+  .get(function (req, res) {
+    res.render('users/create', { title: 'Add New User' });
+  })
+  /* POST to Create User */
+  .post(function (req, res) {
+    // Get our form values. These rely on the "name" attributes
+    var userName = req.body.username;
+    var userEmail = req.body.useremail;
+    var userPassword = req.body.userpassword;
 
-/* POST to Create User */
-router.post('/create', function (req, res) {
-  // Get our form values. These rely on the "name" attributes
-  var userName = req.body.username;
-  var userEmail = req.body.useremail;
-  var userPassword = req.body.userpassword;
-
-  createUser(req.db, userName, userEmail, userPassword, function (err) {
-    if (err) {
-      // If it failed, return error
-      res.send("There was a problem adding the information to the database.");
-    } else {
-      // And forward to success page
-      res.redirect("back");
-    }
+    createUser(req.db, userName, userEmail, userPassword, function (err) {
+      if (err) {
+        // If it failed, return error
+        res.send("There was a problem adding the information to the database.");
+      } else {
+        // And forward to success page
+        res.redirect("back");
+      }
+    });
   });
-});
 
 module.exports = router;
 module.exports.createUser = createUser;
