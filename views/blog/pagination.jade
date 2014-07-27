@@ -2,7 +2,11 @@
   ul.pagination
     li.disabled
       a(href='#') | &laquo;
-    li.active
-      a(href='#') 1
+    if posts.length > 0
+      li.active
+        a(href='#') 1
+    else
+      li.disabled
+        a(href='#') 1
     li.disabled
       a(href='#') | &raquo;
