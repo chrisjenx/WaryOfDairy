@@ -27,6 +27,9 @@ html
           .col-xs-12.col-md-9
             .panel.panel-default
               .panel-body
+                if message
+                  .bg-content.bg-warning
+                    p= message
                 block content
           div.col-xs-12.col-md-3
             include sidebar

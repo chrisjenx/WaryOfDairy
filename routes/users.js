@@ -88,13 +88,6 @@ router.post('/login', function (req, res) {
 router.use(function (req, res, next) {
 //  if (!req.session.user_id) {
   if (!req.session.user) {
-    // On Startup if no users exist we create an admin
-    req.db.get('users').count({}, function (err, count) {
-      console.log("User Count: " + count);
-      if (!err && count === 0) {
-        createUser(req.db, "admin", "admin@waryofdairy.com", "password");
-      }
-    });
     req.session.error = 'You are not authorized to view this page';
     res.redirect('/users/login');
   } else {
@@ -128,10 +121,6 @@ router.get('/create', function (req, res) {
 
 /* POST to Create User */
 router.post('/create', function (req, res) {
-
-  // Set our internal DB variable
-  var db = req.db;
-
   // Get our form values. These rely on the "name" attributes
   var userName = req.body.username;
   var userEmail = req.body.useremail;
@@ -149,3 +138,4 @@ router.post('/create', function (req, res) {
 });
 
 module.exports = router;
+module.exports.createUser = createUser;

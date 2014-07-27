@@ -10,8 +10,7 @@ var session = require('express-session');
 var monk = require('monk');
 var db = monk('localhost:27017/waryofdairy');
 
-
-
+// Routes
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var search = require('./routes/search');
@@ -55,7 +54,7 @@ app.use(function (req, res, next) {
   if (msg) res.locals.message = msg;
   // Add users into locals if exists
   var user = req.session.user;
-  if(user) res.locals.user = user;
+  if (user) res.locals.user = user;
   next();
 });
 
@@ -94,6 +93,14 @@ app.use(function (err, req, res, next) {
     message: err.message,
     error: {}
   });
+});
+
+// On Startup if no users exist we create an admin
+db.get('users').count({}, function (err, count) {
+  console.log("User Count: " + count);
+  if (!err && count === 0) {
+    users.createUser(db, "admin", "admin@waryofdairy.com", "password");
+  }
 });
 
 
