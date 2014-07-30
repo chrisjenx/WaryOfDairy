@@ -5,10 +5,12 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
 
 // Mongo Connection
 var monk = require('monk');
-var db = monk('localhost:27017/waryofdairy');
+var db = monk('localhost:27017/waryofdairy'),
+  postCollection = db.get('posts');
 
 // Routes
 var routes = require('./routes/index');
@@ -17,6 +19,9 @@ var search = require('./routes/search');
 var blog = require('./routes/blog');
 
 var app = express();
+
+// Config
+require('./config')(app, db);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -34,7 +39,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   resave: false, // don't save session if unmodified
   saveUninitialized: false, // don't create session until something stored
-  secret: 'super secret etc' //TODO generate and store in db.
+  secret: 'super secret etc', //TODO generate and store in db.
+  store: new MongoStore({
+    'db': 'waryofdairy'
+  })
 }));
 
 // Set view globals
@@ -44,6 +52,7 @@ app.use(function (req, res, next) {
   res.locals.path = req.path;
   // Make our db accessible to our router
   req.db = db;
+  req.posts = postCollection;
   // Session-persisted message middleware
   var err = req.session.error;
   var msg = req.session.success;
