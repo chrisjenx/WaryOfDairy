@@ -1,0 +1,29 @@
+//
+   Created by chris on 27/07/2014.
+extends ../layout
+
+block stylesheet
+  link(rel='stylesheet', href='/css/bootstrap-markdown.min.css')
+block script
+  script(src='/js/markdown.js')
+  script(src='/js/to-markdown.js')
+  script(src='/js/bootstrap-markdown.js')
+  script(type='text/javascript').
+    $(function(){
+      $("#inputContent").markdown({autofocus:false,savable:false});
+    });
+
+block content
+  h1= title
+  form(role='form', name="create_post", method="post", action="#{path}")
+    .form-group
+      input#inputTitle.form-control(type="text", placeholder="Title?", name="title")
+    .form-group
+      textarea#inputContent(data-provide='markdown' rows='20', name="content")
+    .checkbox
+      label
+        input#inputPublish(type="checkbox", name="publish")
+        | Publish
+
+    hr
+    button(type="submit").btn.btn-default Submit

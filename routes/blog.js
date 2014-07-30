@@ -26,7 +26,7 @@ router.get('/', function (req, res) {
 router.route('/create')
   .all(checkAuth)
   .get(function (req, res) {
-
+    res.render('blog/create');
   })
   .post(function (req, res) {
 

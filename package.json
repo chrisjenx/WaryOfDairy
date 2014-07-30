@@ -14,6 +14,7 @@
     "jade": "~1.3.0",
     "less": "^1.7.3",
     "less-middleware": "1.0.x",
+    "marked": "^0.3.2",
     "mongodb": "^1.4.7",
     "monk": "^0.9.0",
     "morgan": "~1.0.0",
